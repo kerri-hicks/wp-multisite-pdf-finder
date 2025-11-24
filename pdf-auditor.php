@@ -4,7 +4,7 @@
  * Description: Scan WordPress multisite for PDFs, catalog the metadata, display in WordPress, and export as CSV
  * Version: 1.0.0
  * Author: Kerri Hicks
- * License: GPL v2
+ * License: PolyForm Noncommercial License 1.0.0
  * Text Domain: pdf-auditor
  * Network: true
  */
