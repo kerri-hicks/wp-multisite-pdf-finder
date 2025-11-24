@@ -37,6 +37,12 @@
 	text-align: center;
 	flex-shrink: 0;
 	transition: transform 0.2s ease;
+	color: #1c6203;
+	font-size: 16px;
+}
+
+.pdf-auditor-site-toggle .toggle-icon::before {
+	content: '▶';
 }
 
 .pdf-auditor-site-toggle[aria-expanded="true"] .toggle-icon {
@@ -45,7 +51,7 @@
 
 .pdf-auditor-site-toggle .site-name {
 	font-weight: 600;
-	color: #0073aa;
+	color: #1c6203;
 }
 
 .pdf-auditor-site-toggle .site-url {
@@ -160,7 +166,7 @@
 
 .pdf-auditor-table th .sort-indicator {
 	display: inline-block;
-	color: #0073aa;
+	color: #1c6203;
 	font-size: 12px;
 	margin-left: 4px;
 }
@@ -172,7 +178,7 @@
 }
 
 .pdf-auditor-table .url a {
-	color: #0073aa;
+	color: #1c6203;
 	text-decoration: none;
 }
 
