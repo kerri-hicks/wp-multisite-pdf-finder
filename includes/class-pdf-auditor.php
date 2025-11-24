@@ -113,7 +113,7 @@ class PDF_Auditor {
 			'pdfAuditorData',
 			array(
 				'nonce'   => wp_create_nonce( 'pdf_auditor_nonce' ),
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'ajaxUrl' => network_site_url( 'wp-admin/admin-ajax.php' ),
 
 				// All user-facing text is stored here so it’s easy to translate.
 				'strings' => array(
