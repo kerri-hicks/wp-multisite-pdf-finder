@@ -30,6 +30,13 @@ class PDF_Auditor {
 	 * Constructor
 	 */
 	public function __construct() {
+		// Disable WordPress emoji conversion for clean Unicode rendering
+		remove_action( 'wp_head', 'print_emoji_detection_script' );
+		remove_action( 'wp_print_styles', 'print_emoji_styles' );
+		remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
+		remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
+		remove_filter( 'the_content_feed', 'wp_staticize_emoji' );
+
 		add_action( 'network_admin_menu', array( $this, 'register_network_admin_page' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_action( 'wp_ajax_pdf_auditor_get_site_pdfs', array( $this, 'ajax_get_site_pdfs' ) );
@@ -120,8 +127,8 @@ class PDF_Auditor {
 				<?php foreach ( $sites as $site_id ) : ?>
 					<?php $site = get_site( $site_id ); ?>
 					<div class="pdf-auditor-site" data-site-id="<?php echo absint( $site_id ); ?>">
-						<button class="pdf-auditor-site-toggle" type="button">
-							<span class="toggle-icon">▶</span>
+						<button class="pdf-auditor-site-toggle" type="button" aria-expanded="false">
+							<span class="toggle-icon"></span>
 							<span class="site-name"><?php echo esc_html( $site->blogname ); ?></span>
 							<span class="site-url"><?php echo esc_html( $site->domain . $site->path ); ?></span>
 						</button>
