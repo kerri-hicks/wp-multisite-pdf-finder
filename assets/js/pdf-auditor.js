@@ -15,7 +15,7 @@
 
 		bindEvents: function() {
 			var self = this;
-			
+
 			// Toggle site accordion
 			this.$accordion.on('click', '.pdf-auditor-site-toggle', function(e) {
 				e.preventDefault();
@@ -46,10 +46,8 @@
 			// Toggle the content
 			if (isOpen) {
 				$content.slideUp(200);
-				$button.find('.toggle-icon').text('▶');
 				$button.attr('aria-expanded', false);
 			} else {
-				$button.find('.toggle-icon').text('▼');
 				$button.attr('aria-expanded', true);
 				
 				// Check if we need to load the data
@@ -131,7 +129,7 @@
 			html += '<th data-sort="filename">Filename <span class="sort-indicator"></span></th>';
 			html += '<th>Direct Link</th>';
 			html += '<th data-sort="upload_date">Upload Date <span class="sort-indicator">▼</span></th>';
-			html += '<th data-sort="file_size_raw">File Size <span class="sort-indicator"></span></th>';
+			html += '<th data-sort="file_size_raw" class="file-size">File Size <span class="sort-indicator"></span></th>';
 			html += '</tr></thead>';
 			html += '<tbody>';
 
