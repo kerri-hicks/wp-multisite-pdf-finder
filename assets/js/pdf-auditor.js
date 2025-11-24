@@ -11,7 +11,6 @@
 
 		cacheSelectors: function() {
 			this.$accordion = $('#pdf-auditor-accordion');
-			this.$toggleButtons = this.$accordion.on('click', '.pdf-auditor-site-toggle', this.toggleSite.bind(this));
 		},
 
 		bindEvents: function() {
@@ -48,21 +47,30 @@
 			if (isOpen) {
 				$content.slideUp(200);
 				$button.find('.toggle-icon').text('▶');
+				$button.attr('aria-expanded', false);
 			} else {
 				$button.find('.toggle-icon').text('▼');
+				$button.attr('aria-expanded', true);
 				
 				// Check if we need to load the data
 				if ($content.find('.pdf-auditor-loading').length) {
+					// Prevent duplicate loads
+					if ( $site.data('loading') ) {
+						$content.slideDown(200);
+						return;
+					}
+
+					$site.data('loading', true);
 					// Update loading message to localized string
 					$content.find('.pdf-auditor-loading p').text(strings.loadingPDFs);
-					PDFAuditor.fetchPDFs(siteId, $content);
+					PDFAuditor.fetchPDFs(siteId, $content, $site);
 				}
 				
 				$content.slideDown(200);
 			}
 		},
 
-		fetchPDFs: function(siteId, $container) {
+		fetchPDFs: function(siteId, $container, $site) {
 			var self = this;
 			var strings = pdfAuditorData.strings;
 
@@ -90,6 +98,12 @@
 						$container.html('<p class="error">' + strings.networkError + '</p>');
 					} else {
 						$container.html('<p class="error">' + strings.errorLoading + '</p>');
+					}
+				},
+				complete: function() {
+					// Clear loading flag after AJAX completes
+					if ( $site ) {
+						$site.data('loading', false);
 					}
 				}
 			});
@@ -127,7 +141,7 @@
 				html += '<td class="filename">' + $('<div>').text(pdf.filename).html() + '</td>';
 				html += '<td class="url"><a href="' + $('<div>').text(pdf.url).html() + '" target="_blank">' + strings.viewPDF + '</a></td>';
 				html += '<td class="upload-date">' + $('<div>').text(pdf.upload_date).html() + '</td>';
-				html += '<td class="file-size">' + $('<div>').text(pdf.file_size).html() + '</td>';
+				html += '<td class="file-size" data-size-raw="' + pdf.file_size_raw + '">' + $('<div>').text(pdf.file_size).html() + '</td>';
 				html += '</tr>';
 			});
 
@@ -144,6 +158,7 @@
 			var sortKey = $header.data('sort');
 			var $siteElement = $container.closest('.pdf-auditor-site');
 			var siteId = $siteElement.data('site-id');
+			var strings = pdfAuditorData.strings;
 
 			// Initialize sort state for this site if needed
 			if (!PDFAuditor.sortState[siteId]) {
@@ -168,7 +183,8 @@
 					filename: $row.find('.filename').text(),
 					url: $row.find('.url a').attr('href'),
 					upload_date: $row.find('.upload-date').text(),
-					file_size: $row.find('.file-size').text()
+					file_size: $row.find('.file-size').text(),
+					file_size_raw: parseInt( $row.find('.file-size').data('size-raw'), 10 ) || 0
 				});
 			});
 
@@ -186,8 +202,8 @@
 						bVal = new Date(b.upload_date).getTime();
 						break;
 					case 'file_size_raw':
-						aVal = PDFAuditor.parseSizeToBytes(a.file_size);
-						bVal = PDFAuditor.parseSizeToBytes(b.file_size);
+						aVal = a.file_size_raw;
+						bVal = b.file_size_raw;
 						break;
 					default:
 						return 0;
@@ -210,28 +226,18 @@
 			$.each(pdfs, function(index, pdf) {
 				html += '<tr>';
 				html += '<td class="filename">' + $('<div>').text(pdf.filename).html() + '</td>';
-				html += '<td class="url"><a href="' + $('<div>').text(pdf.url).html() + '" target="_blank">View PDF</a></td>';
+				html += '<td class="url"><a href="' + $('<div>').text(pdf.url).html() + '" target="_blank">' + strings.viewPDF + '</a></td>';
 				html += '<td class="upload-date">' + $('<div>').text(pdf.upload_date).html() + '</td>';
-				html += '<td class="file-size">' + $('<div>').text(pdf.file_size).html() + '</td>';
+				html += '<td class="file-size" data-size-raw="' + pdf.file_size_raw + '">' + $('<div>').text(pdf.file_size).html() + '</td>';
 				html += '</tr>';
 			});
 
 			$table.find('tbody').html(html);
 		},
 
-		parseSizeToBytes: function(sizeString) {
-			var units = { 'B': 1, 'KB': 1024, 'MB': 1024 * 1024, 'GB': 1024 * 1024 * 1024 };
-			var parts = sizeString.trim().split(' ');
-			var number = parseFloat(parts[0]);
-			var unit = parts[1] || 'B';
-			return number * (units[unit] || 1);
-		},
-
 		downloadCSV: function() {
 			var $button = $(this);
 			var siteId = $button.data('site-id');
-			var $site = $button.closest('.pdf-auditor-site');
-			var siteName = $site.find('.site-name').text();
 			var strings = pdfAuditorData.strings;
 
 			$button.prop('disabled', true).text(strings.downloading);
