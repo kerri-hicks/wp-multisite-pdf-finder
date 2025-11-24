@@ -78,9 +78,6 @@ Suggested workflow for improving PDF accessibility:
    - Upload new versions to replace old ones
    - Or delete if no longer needed
 
-4. **Verification Phase**
-   - Re-run PDF Auditor to confirm changes
-   - Verify PDF quality and accessibility
 
 ## Technical Details
 
@@ -148,7 +145,7 @@ pdf-auditor/
 
 ## License
 
-GPL v2 or later
+PolyForm Noncommercial License 1.0.0
 
 ## Support & Contributing
 
