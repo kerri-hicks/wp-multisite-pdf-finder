@@ -238,9 +238,10 @@
 
 				switch(sortKey) {
 					case 'filename':
-						aVal = a.filename.toLowerCase();
-						bVal = b.filename.toLowerCase();
-						break;
+						// Use localeCompare with numeric option for natural sorting
+						// (file1, file2, file10 instead of file1, file10, file2)
+						aVal = a.filename.localeCompare(b.filename, undefined, { numeric: true });
+						return direction === 'asc' ? aVal : -aVal;
 					case 'upload_date':
 						aVal = new Date(a.upload_date).getTime();
 						bVal = new Date(b.upload_date).getTime();
@@ -253,6 +254,7 @@
 						return 0;
 				}
 
+				// For non-filename sorts, use standard comparison
 				if (direction === 'asc') {
 					return aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
 				} else {
